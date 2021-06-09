@@ -1,5 +1,5 @@
 
-const storage = [];
+let storage = [];
 
 
 function validateToken (token) {

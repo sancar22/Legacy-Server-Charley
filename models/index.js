@@ -8,7 +8,7 @@ mongoose.connect(
     if (err) {
       console.log(`😞 can't connet to db, something went wrong! ${err}`);
     } else {
-      console.log(`🦆 Database connected!`);
+      console.log(`🦆 database connected!`);
     }
   }
 );
