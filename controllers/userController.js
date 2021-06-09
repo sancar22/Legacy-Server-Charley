@@ -10,7 +10,7 @@ const createUser = async (req, res) => {
     const {email, password, username} = req.body;
 
     if (!(email && password && username))  {
-      return res.status(400).send('incomplete request');
+      return res.status(400).send('invalid request');
     }
     if(await User.findOne({email}).exec()) {
       return res.status(400).send('user already exists!');
