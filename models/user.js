@@ -1,6 +1,5 @@
 const mongoose = require('./index');
 
-
 const userSchema = mongoose.Schema({
   email: {
     type: String,
