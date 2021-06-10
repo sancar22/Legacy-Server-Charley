@@ -21,7 +21,7 @@ const createUser = async (req, res) => {
     const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
     const newUser = await new User({email, password: hashedPassword, username});
     newUser.save();
-    // send back access token
+    // send back access token and user
     let token = jwt.sign({_id: newUser._id}, SECRET_KEY, {expiresIn: '1h'});
     validateToken(token);
     res.status(200).json({accessToken: token, newUser});
@@ -42,20 +42,11 @@ const login = async (req, res) => {
     return res.status(403).end('invalid username or password');
   }
 
-  // send back access token
+  // send back access token and user
   let token = jwt.sign({_id: user._id}, SECRET_KEY, {expiresIn: '1h'});
   validateToken(token);
   res.status(200).json({accessToken: token, user});
 }
-
-
-// const profile = async (req, res) => {
-//   try {
-//     res.status(200).json(req.user);
-//   } catch {
-//     res.status(404).send({ error, message: 'Resource not found' });
-//   }
-// }
 
 const logout = async (req, res) => {
    token = req.headers['authorization'].split(' ')[1];
