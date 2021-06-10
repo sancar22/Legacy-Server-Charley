@@ -19,10 +19,10 @@ const authMiddleware = async (req, res, next) => {
     }
 
     // find user
-    const { _id } = jwt.verify(token, SECRET_KEY);
-    const user = await User.findOne({ _id });
-    if (!user) return res.sendStatus(401);
-    req.user = user;
+    // const { _id } = jwt.verify(token, SECRET_KEY);
+    // const user = await User.findOne({ _id });
+    // if (!user) return res.sendStatus(401);
+    // req.user = user;
 
     next();
 

@@ -24,7 +24,7 @@ const createUser = async (req, res) => {
     // send back access token
     let token = jwt.sign({_id: newUser._id}, SECRET_KEY, {expiresIn: '1h'});
     validateToken(token);
-    res.status(200).json({accessToken: token});
+    res.status(200).json({accessToken: token, newUser});
 
   } catch (e) {
     console.log(e)
@@ -45,17 +45,17 @@ const login = async (req, res) => {
   // send back access token
   let token = jwt.sign({_id: user._id}, SECRET_KEY, {expiresIn: '1h'});
   validateToken(token);
-  res.status(200).json({accessToken: token});
+  res.status(200).json({accessToken: token, user});
 }
 
 
-const profile = async (req, res) => {
-  try {
-    res.status(200).json(req.user);
-  } catch {
-    res.status(404).send({ error, message: 'Resource not found' });
-  }
-}
+// const profile = async (req, res) => {
+//   try {
+//     res.status(200).json(req.user);
+//   } catch {
+//     res.status(404).send({ error, message: 'Resource not found' });
+//   }
+// }
 
 const logout = async (req, res) => {
    token = req.headers['authorization'].split(' ')[1];
