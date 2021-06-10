@@ -21,7 +21,7 @@ const createUser = async (req, res) => {
     const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
     const newUser = await new User({email, password: hashedPassword, username});
     newUser.save();
-    // send back access token and user
+    // send back access token and user...maybe
     let token = jwt.sign({_id: newUser._id}, SECRET_KEY, {expiresIn: '1h'});
     validateToken(token);
     res.status(200).json({accessToken: token, newUser});
@@ -48,6 +48,19 @@ const login = async (req, res) => {
   res.status(200).json({accessToken: token, user});
 }
 
+
+const profile = async (req, res) => {
+
+  const user = await User.findById(req.body._id);
+
+  if(user) {
+    res.status(200).json(user);
+  } else {
+    res.sendStatus(400);
+  }
+}
+
+
 const logout = async (req, res) => {
    token = req.headers['authorization'].split(' ')[1];
    invalidateToken(token);
@@ -65,4 +78,4 @@ const getAllUsers = async (req, res) => {
   }
 }
 
-module.exports = { createUser, getAllUsers, login, logout};
+module.exports = { createUser, getAllUsers, login, logout, profile};

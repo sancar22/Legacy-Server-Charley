@@ -13,10 +13,12 @@ const authMiddleware = async (req, res, next) => {
     if (!authHeaders) return res.sendStatus(403);
     const token = authHeaders.split(' ')[1];
 
-
     if (!isTokenValid(token)) {
       throw new Error('invalid token');
     }
+
+    let tokenData = jwt.verify(token, SECRET_KEY);
+    req.body._id = tokenData._id;
 
     next();
 
