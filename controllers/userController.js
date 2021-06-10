@@ -74,4 +74,4 @@ const getAllUsers = async (req, res) => {
   }
 }
 
-module.exports = { createUser, getAllUsers, login, logout, profile};
+module.exports = { createUser, getAllUsers, login, logout};
