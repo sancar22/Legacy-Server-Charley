@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-
 const User = require('../models/user');
+
 const { isTokenValid } = require('./tokenValidation');
 const SECRET_KEY = process.env.SECRET_KEY;
 

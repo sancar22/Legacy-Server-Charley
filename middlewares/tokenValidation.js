@@ -1,4 +1,4 @@
-
+// token whitelist
 let storage = [];
 
 
