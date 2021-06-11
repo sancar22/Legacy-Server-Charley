@@ -1,6 +1,6 @@
 const cheerio = require('cheerio');
 const fetch = require('node-fetch');
-
+const _ = require('lodash');
 
 
 const fetchWithTimeout = (url, options, timeout = 5000) => {
@@ -12,7 +12,6 @@ const fetchWithTimeout = (url, options, timeout = 5000) => {
   ]);
 }
 
-
 const fetchHtml = (url) => {
   return fetchWithTimeout(url).then(res => res.text());
 }
@@ -21,12 +20,16 @@ const parseHtml = (html) => {
 
   const $ = cheerio.load(html);
   const jsonld = $('script[type="application/ld+json"]').html();
+
   if (!jsonld) return false;
   const parsed = JSON.parse(jsonld);
 
   let recipe = {};
   if (!parsed.hasOwnProperty('recipeIngredient')) {
-    recipe = parsed['@graph'].filter(obj => obj['@type'] === 'Recipe')[0];
+    recipe = parsed.filter(obj => obj['@type'] === 'Recipe')[0];
+    if (!recipe) {
+      recipe = parsed['@graph'].filter(obj => obj['@type'] === 'Recipe')[0];
+    }
   }
 
   if (parsed.recipeIngredient) {
@@ -36,13 +39,13 @@ const parseHtml = (html) => {
   } else {
     return false;
   }
-
 }
 
-const scrape = async (req, res) => {
+const handleScrape = async (req, res) => {
   try {
     const html = await fetchHtml(req.body.url);
     if (!html) throw new Error('is this even a website');
+
     const jsonld = parseHtml(html);
     if(!jsonld) throw new Error('no json ld');
 
@@ -59,4 +62,4 @@ const scrape = async (req, res) => {
 
 
 
-module.exports = { scrape }
+module.exports = { handleScrape}
