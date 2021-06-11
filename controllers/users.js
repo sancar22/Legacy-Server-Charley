@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const User = require('./../models/user');
+const User = require('../models/user');
 const { validateToken, invalidateToken } = require('../middlewares/tokenValidation');
 const SECRET_KEY = process.env.SECRET_KEY
 
