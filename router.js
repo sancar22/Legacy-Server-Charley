@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('./controllers/users');
 const recipeScrapingController = require('./controllers/recipeScraper');
+const recipeController = require('./controllers/recipe');
 const authMiddleware = require('./middlewares/auth');
 
 router.post('/signup', userController.createUser);
@@ -11,6 +12,7 @@ router.get('/profile', authMiddleware, userController.profile);
 router.get('/users', userController.getAllUsers);
 
 router.post('/scrape', authMiddleware, recipeScrapingController.handleScrape);
+router.post('/deleteRecipe', authMiddleware, recipeController.deleteRecipe);
 
 
 module.exports = router;
