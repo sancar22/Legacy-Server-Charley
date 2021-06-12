@@ -10,7 +10,7 @@ router.get('/logout', authMiddleware, userController.logout);
 router.get('/profile', authMiddleware, userController.profile);
 router.get('/users', userController.getAllUsers);
 
-router.post('/scrape', recipeScrapingController.handleScrape);
+router.post('/scrape', authMiddleware, recipeScrapingController.handleScrape);
 
 
 module.exports = router;

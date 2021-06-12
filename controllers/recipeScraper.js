@@ -1,7 +1,7 @@
 const cheerio = require('cheerio');
 const fetch = require('node-fetch');
 const _ = require('lodash');
-const { json } = require('express');
+const User = require('../models/user');
 
 
 const fetchWithTimeout = (url, options, timeout = 5000) => {
@@ -91,7 +91,13 @@ const handleScrape = async (req, res) => {
 
     const recipe = extractData(jsonld);
     recipe.url = req.body.url
+
+    // save to user document
+    await User.findByIdAndUpdate(req.body._id, {$push: {recipeStore: recipe}}, {new: true});
+
     res.status(200).json(recipe);
+
+
 
   } catch (e) {
     console.log(e);
