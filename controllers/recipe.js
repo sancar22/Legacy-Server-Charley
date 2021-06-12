@@ -7,11 +7,10 @@ const deleteRecipe = async (req, res) => {
 
   try {
     await User.findByIdAndUpdate(userId,
-      { $pull: { 'recipeStore': { id: recipeId } } },
-      { new: true }
+      { $pull: { 'recipeStore': { id: recipeId } } }
     );
 
-    res.status(200).send('successfully deleted')
+    res.status(200).send('successfully deleted');
 
   } catch (e) {
     console.log(e)
