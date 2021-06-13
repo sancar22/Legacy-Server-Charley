@@ -13,6 +13,7 @@ router.get('/users', userController.getAllUsers);
 
 router.post('/scrape', authMiddleware, recipeScrapingController.handleScrape);
 router.post('/deleteRecipe', authMiddleware, recipeController.deleteRecipe);
+router.post('/nameChange', authMiddleware, recipeController.nameChange);
 
 
 module.exports = router;
