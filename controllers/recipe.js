@@ -21,7 +21,7 @@ const nameChange = async (req, res) => {
   const recipeId = req.body.id;
 
   try {
-    await findOneAndUpdate(
+    await User.findOneAndUpdate(
       {_id: userId, recipeStore: {$elemMatch: {id: recipeId}}},
       {$set: {'recipeStore.$.name': req.body.name,}},
       {'new': true, 'safe': true, 'upsert': true}
