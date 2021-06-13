@@ -93,6 +93,7 @@ const handleScrape = async (req, res) => {
     const recipe = extractData(jsonld);
     recipe.url = req.body.url
     recipe.id = uuid.v4();
+    recipe.notes = [];
 
     // save to user document
     await User.findByIdAndUpdate(req.body._id, {$push: {recipeStore: recipe}}, {new: true});
