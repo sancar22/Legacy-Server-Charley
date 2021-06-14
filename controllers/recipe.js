@@ -6,14 +6,30 @@ const deleteRecipe = async (req, res) => {
 
   try {
     await User.findByIdAndUpdate(userId,
-      { $pull: { 'recipeStore': { id: recipeId } } }
+      {$pull: {'recipeStore': {id: recipeId}}}
     );
     res.status(200).send('successfully deleted');
 
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(400).send(e);
   }
+}
+
+const addFromFriend = async (req, res) => {
+  const userId = req.body._id;
+  const recipe = req.body.recipe;
+
+  try {
+    await User.findByIdAndUpdate(userId,
+      {$push: {'recipeStore': recipe }}
+    );
+    res.status(200).send('successfully deleted');
+  } catch (e) {
+    console.log(e);
+    res.status(400).send(e);
+  }
+
 }
 
 const nameChange = async (req, res) => {
@@ -72,4 +88,4 @@ const deleteNote = async (req, res) => {
 
 
 
-module.exports = { deleteRecipe, nameChange, addNote, deleteNote};
+module.exports = { deleteRecipe, nameChange, addNote, deleteNote, addFromFriend};
