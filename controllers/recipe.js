@@ -35,22 +35,20 @@ const nameChange = async (req, res) => {
 }
 
 const addNote = async (req, res) => {
-  const userId = req.body_id;
-  const recipeId = req.body.recipeId;
-  const recipe = await User.findById(userId);
-  console.log(recipe);
+  const userId = req.body._id;
+  const recipeId = req.body.id;
 
-  // try {
-  //   await User.findOneAndUpdate(
-  //     {_id: userId, recipeStore: {$elemMatch: {id: recipeId}}},
-  //     {$push: {'recipeStore.$.notes': req.body.note}},
-  //     {'new': true, 'safe': true, 'upsert': true}
-  //   );
-  //   res.status(200).send('note saved successfully');
-  // } catch (e) {
-  //   console.log(e);
-  //   res.status(400).send(e);
-  // }
+  try {
+    await User.findOneAndUpdate(
+      {_id: userId, recipeStore: {$elemMatch: {id: recipeId}}},
+      {$push: {'recipeStore.$.notes': req.body.note,}},
+      {'new': true, 'safe': true}
+    );
+    res.status(200).send('successfully added note');
+  } catch (e) {
+    console.log(e);
+    res.status(400).send(e);
+  }
 }
 
 
