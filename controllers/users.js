@@ -69,14 +69,16 @@ const logout = async (req, res) => {
 }
 
 
-const getAllUsers = async (req, res) => {
+const getAllButMe = async (req, res) => {
   try {
     const users = await User.find();
-    res.status(200).json(users);
+    const allButMe = users.filter(user => user.id !== req.body._id);
+    const usernames = allButMe.map(user => user.username);
+    res.status(200).json(usernames);
   } catch (e) {
     console.log(e)
     res.status(400).send(e);
   }
 }
 
-module.exports = { createUser, getAllUsers, login, logout, profile};
+module.exports = { createUser, getAllButMe, login, logout, profile};
