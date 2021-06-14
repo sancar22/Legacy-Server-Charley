@@ -10,6 +10,7 @@ router.post('/login', userController.login);
 router.get('/logout', authMiddleware, userController.logout);
 router.get('/profile', authMiddleware, userController.profile);
 router.get('/users', authMiddleware, userController.getAllButMe);
+router.post('/getFriendStore', authMiddleware, userController.getFriendStore);
 
 router.post('/scrape', authMiddleware, recipeScrapingController.handleScrape);
 router.post('/deleteRecipe', authMiddleware, recipeController.deleteRecipe);

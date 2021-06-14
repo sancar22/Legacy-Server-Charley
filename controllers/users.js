@@ -81,4 +81,19 @@ const getAllButMe = async (req, res) => {
   }
 }
 
-module.exports = { createUser, getAllButMe, login, logout, profile};
+const getFriendStore = async (req, res) => {
+  try {
+    const user = await User.findOne({username: req.body.username});
+    if (user) {
+      res.status(200).json(user.recipeStore);
+    } else {
+      throw new Error ('user not found');
+    }
+  } catch (e) {
+    res.status(400).send(e);
+  }
+
+}
+
+
+module.exports = { createUser, getAllButMe, login, logout, profile, getFriendStore};
