@@ -95,6 +95,9 @@ const handleScrape = async (req, res) => {
     recipe.id = uuid.v4();
     recipe.notes = [];
 
+    const user = await User.findById(req.body._id);
+    recipe.origin = user.username;
+
     // save to user document
     await User.findByIdAndUpdate(req.body._id, {$push: {recipeStore: recipe}}, {new: true});
     res.status(200).json(recipe);
