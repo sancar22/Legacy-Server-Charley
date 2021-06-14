@@ -51,7 +51,25 @@ const addNote = async (req, res) => {
   }
 }
 
+const deleteNote = async (req, res) => {
+  const userId = req.body._id;
+  const recipeId = req.body.id;
+
+  try {
+    await User.findOneAndUpdate(
+      {_id: userId, recipeStore: {$elemMatch: {id: recipeId}}},
+      {$pull: {'recipeStore.$.notes': {id: req.body.noteId}}},
+      {'new': true, 'safe': true}
+    );
+    res.status(200).send('successfully deleted note');
+  } catch (e) {
+    console.log(e);
+    res.status(400).send(e);
+  }
+
+}
 
 
 
-module.exports = { deleteRecipe, nameChange, addNote};
+
+module.exports = { deleteRecipe, nameChange, addNote, deleteNote};

@@ -16,6 +16,7 @@ router.post('/scrape', authMiddleware, recipeScrapingController.handleScrape);
 router.post('/deleteRecipe', authMiddleware, recipeController.deleteRecipe);
 router.post('/nameChange', authMiddleware, recipeController.nameChange);
 router.post('/addNote', authMiddleware, recipeController.addNote);
+router.post('/deleteNote', authMiddleware, recipeController.deleteNote);
 
 
 module.exports = router;
