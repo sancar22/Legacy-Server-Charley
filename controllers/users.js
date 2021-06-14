@@ -14,10 +14,10 @@ const createUser = async (req, res) => {
       return res.status(400).send('invalid request');
     }
     if (await User.findOne({email}).exec()) {
-      return res.status(400).send('user already exists!');
+      return res.status(403).send('user already exists!');
     }
     if (await User.findOne({username}).exec()) {
-      return res.status(400).send('this username is taken');
+      return res.status(409).send('this username is taken');
     }
 
     // create user
@@ -27,7 +27,7 @@ const createUser = async (req, res) => {
     // send back access token
     let token = jwt.sign({_id: newUser._id}, SECRET_KEY, {expiresIn: '1h'});
     validateToken(token);
-    res.status(200).json({accessToken: token});
+    res.status(201).json({accessToken: token});
 
   } catch (e) {
     console.log(e)
