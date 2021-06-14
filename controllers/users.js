@@ -13,8 +13,11 @@ const createUser = async (req, res) => {
     if (!(email && password && username))  {
       return res.status(400).send('invalid request');
     }
-    if(await User.findOne({email}).exec()) {
+    if (await User.findOne({email}).exec()) {
       return res.status(400).send('user already exists!');
+    }
+    if (await User.findOne({username}).exec()) {
+      return res.status(400).send('this username is taken');
     }
 
     // create user
