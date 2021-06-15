@@ -29,9 +29,7 @@ const parseHtml = (html) => {
     console.log('i was nested');
     if (Array.isArray(recipe)){
       nestedRecipe = recipe.filter(obj => obj['@type'] === 'Recipe')[0];
-    }
-    if (nestedRecipe !== {}) {
-      console.log('i was really nested');
+    } else if (nestedRecipe !== {}) {
       nestedRecipe = recipe['@graph'].filter(obj => obj['@type'] === 'Recipe')[0];
     }
   }
@@ -57,6 +55,9 @@ const extractData = (jsonld) => {
 
       } else if (key === 'image' && Array.isArray(jsonld[key])) {
         recipe[key] = jsonld[key][0];
+
+      } else if (key === 'image' && jsonld[key].hasOwnProperty('url')) {
+        recipe[key] = jsonld[key].url;
 
       } else if (key === 'recipeYield' && typeof jsonld[key] !== 'string') {
         recipe[key] = '';

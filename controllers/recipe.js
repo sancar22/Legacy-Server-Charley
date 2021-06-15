@@ -24,7 +24,7 @@ const addFromFriend = async (req, res) => {
     await User.findByIdAndUpdate(userId,
       {$push: {'recipeStore': recipe }}
     );
-    res.status(200).send('successfully deleted');
+    res.status(204).send('success');
   } catch (e) {
     console.log(e);
     res.status(400).send(e);
@@ -32,15 +32,23 @@ const addFromFriend = async (req, res) => {
 
 }
 
-const nameChange = async (req, res) => {
+
+const editRecipe = async(req, res) => {
   const userId = req.body._id;
-  const recipeId = req.body.id;
+  const recipeId = req.body.id
+  const editAction = req.params.editAction;
+
+  let options = {
+    'nameChange': {$set: {'recipeStore.$.name': req.body.payload}},
+    'addNote': {$push: {'recipeStore.$.notes': req.body.payload}},
+    'deleteNote':{$pull: {'recipeStore.$.notes': {id: req.body.payload}}},
+  }
 
   try {
     await User.findOneAndUpdate(
       {_id: userId, recipeStore: {$elemMatch: {id: recipeId}}},
-      {$set: {'recipeStore.$.name': req.body.name,}},
-      {'new': true, 'safe': true, 'upsert': true}
+      options[editAction],
+      {'new': true, 'safe': true}
     );
     res.status(200).send('successfully updated');
 
@@ -50,42 +58,5 @@ const nameChange = async (req, res) => {
   }
 }
 
-const addNote = async (req, res) => {
-  const userId = req.body._id;
-  const recipeId = req.body.id;
 
-  try {
-    await User.findOneAndUpdate(
-      {_id: userId, recipeStore: {$elemMatch: {id: recipeId}}},
-      {$push: {'recipeStore.$.notes': req.body.note,}},
-      {'new': true, 'safe': true}
-    );
-    res.status(200).send('successfully added note');
-  } catch (e) {
-    console.log(e);
-    res.status(400).send(e);
-  }
-}
-
-const deleteNote = async (req, res) => {
-  const userId = req.body._id;
-  const recipeId = req.body.id;
-
-  try {
-    await User.findOneAndUpdate(
-      {_id: userId, recipeStore: {$elemMatch: {id: recipeId}}},
-      {$pull: {'recipeStore.$.notes': {id: req.body.noteId}}},
-      {'new': true, 'safe': true}
-    );
-    res.status(200).send('successfully deleted note');
-  } catch (e) {
-    console.log(e);
-    res.status(400).send(e);
-  }
-
-}
-
-
-
-
-module.exports = { deleteRecipe, nameChange, addNote, deleteNote, addFromFriend};
+module.exports = { deleteRecipe, addFromFriend, editRecipe};

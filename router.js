@@ -14,9 +14,8 @@ router.post('/getFriendStore', authMiddleware, userController.getFriendStore);
 
 router.post('/scrape', authMiddleware, recipeScrapingController.handleScrape);
 router.post('/deleteRecipe', authMiddleware, recipeController.deleteRecipe);
-router.post('/nameChange', authMiddleware, recipeController.nameChange);
-router.post('/addNote', authMiddleware, recipeController.addNote);
-router.post('/deleteNote', authMiddleware, recipeController.deleteNote);
 router.post('/addFromFriend', authMiddleware, recipeController.addFromFriend);
+router.post('/editRecipe/:editAction', authMiddleware, recipeController.editRecipe);
+
 
 module.exports = router;
