@@ -12,7 +12,7 @@ const deleteRecipe = async (req, res) => {
 
   } catch (e) {
     console.log(e);
-    res.status(400).send(e);
+    res.status(500).send(e);
   }
 }
 
@@ -27,7 +27,7 @@ const addFromFriend = async (req, res) => {
     res.status(204).send('success');
   } catch (e) {
     console.log(e);
-    res.status(400).send(e);
+    res.status(500).send(e);
   }
 
 }
@@ -54,7 +54,7 @@ const editRecipe = async(req, res) => {
 
   } catch (e) {
     console.log(e);
-    res.status(400).send(e);
+    res.status(500).send(e);
   }
 }
 

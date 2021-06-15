@@ -17,11 +17,6 @@ const userSchema = mongoose.Schema({
     type: Array,
     required: false,
     default: []
-  },
-  following: {
-    type: Array,
-    required: false,
-    default: []
   }
 });
 

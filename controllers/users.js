@@ -25,7 +25,7 @@ const createUser = async (req, res) => {
     const newUser = await new User({email, password: hashedPassword, username});
     newUser.save();
     // send back access token
-    let token = jwt.sign({_id: newUser._id}, SECRET_KEY, {expiresIn: '1h'});
+    let token = jwt.sign({_id: newUser._id}, SECRET_KEY, {expiresIn: '3h'});
     validateToken(token);
     res.status(201).json({accessToken: token});
 
@@ -46,14 +46,13 @@ const login = async (req, res) => {
   }
 
   // send back access token
-  let token = jwt.sign({_id: user._id}, SECRET_KEY, {expiresIn: '1h'});
+  let token = jwt.sign({_id: user._id}, SECRET_KEY, {expiresIn: '3h'});
   validateToken(token);
   res.status(200).json({accessToken: token});
 }
 
 
 const profile = async (req, res) => {
-
   const user = await User.findById(req.body._id);
   if(user) {
     res.status(200).json(user);
@@ -96,4 +95,4 @@ const getFriendStore = async (req, res) => {
 }
 
 
-module.exports = { createUser, getAllButMe, login, logout, profile, getFriendStore};
+module.exports = { createUser, getAllButMe, login, logout, profile, getFriendStore };
