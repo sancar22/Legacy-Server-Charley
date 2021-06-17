@@ -1,11 +1,8 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-const User = require('../models/user');
-const {
-  validateToken,
-  invalidateToken,
-} = require('../middlewares/tokenValidation');
+import User from '../models/user';
+import { validateToken, invalidateToken } from '../middlewares/tokenValidation';
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
@@ -96,12 +93,12 @@ const getFriendStore = async (req, res) => {
     res.status(400).send(e);
   }
 };
-
-module.exports = {
+const userController = {
   createUser,
   getAllButMe,
   login,
   logout,
   profile,
   getFriendStore,
-};
+}
+export default userController ;

@@ -1,7 +1,7 @@
-const cheerio = require('cheerio');
-const fetch = require('node-fetch');
-const uuid = require('uuid');
-const User = require('../models/user');
+import cheerio from 'cheerio';
+import fetch from 'node-fetch';
+import uuid from 'uuid';
+import User from '../models/user';
 import { Request, Response } from 'express';
 import { ExtractedRecipe, Recipe, UserDB } from '../lib/index';
 
@@ -118,4 +118,4 @@ const handleScrape = async (req: Request, res: Response) => {
   }
 };
 
-module.exports = { handleScrape };
+export default { handleScrape };

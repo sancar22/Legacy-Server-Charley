@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
+import { verify } from 'jsonwebtoken';
 
-const { isTokenValid } = require('./tokenValidation');
+import { isTokenValid } from './tokenValidation';
 
 const { SECRET_KEY } = process.env;
 
@@ -15,7 +15,7 @@ const authMiddleware = async (req, res, next) => {
       throw new Error('invalid token');
     }
 
-    let tokenData = jwt.verify(token, SECRET_KEY);
+    let tokenData = verify(token, SECRET_KEY);
     req.body._id = tokenData._id;
 
     next();
@@ -24,4 +24,4 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
+export default authMiddleware;

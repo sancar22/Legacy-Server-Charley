@@ -55,5 +55,5 @@ const editRecipe = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(500).send(e);
     }
 });
-module.exports = { deleteRecipe, addFromFriend, editRecipe };
+exports.default = { deleteRecipe, addFromFriend, editRecipe };
 //# sourceMappingURL=recipe.js.map

@@ -17,7 +17,7 @@ const fetchWithTimeout = (url, options, timeout = 5000) => Promise.race([
     fetch(url, options),
     new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), timeout)),
 ]);
-const fetchHtml = (url) => fetchWithTimeout(url, '', 5000).then((res) => res.text());
+const fetchHtml = (url) => fetchWithTimeout(url).then((res) => res.text());
 const parseHtml = (html) => {
     const $ = cheerio.load(html);
     const jsonld = $('script[type="application/ld+json"]').html();
@@ -26,7 +26,6 @@ const parseHtml = (html) => {
     const recipe = JSON.parse(jsonld);
     let nestedRecipe = {};
     if (!recipe.hasOwnProperty('recipeIngredient')) {
-        console.log('i was nested');
         if (Array.isArray(recipe)) {
             nestedRecipe = recipe.filter((obj) => obj['@type'] === 'Recipe')[0];
         }
@@ -53,7 +52,7 @@ const extractData = (jsonld) => {
         'publisher',
         'author',
     ];
-    const recipe = {};
+    let recipe = {};
     for (let key of desiredKeys) {
         if (jsonld.hasOwnProperty(key)) {
             if (key === 'keywords' && typeof jsonld[key] === 'string') {
@@ -83,7 +82,11 @@ const extractData = (jsonld) => {
                     recipe[key] = jsonld[key].name;
                 }
             }
-            else {
+            else if (key === 'recipeYield' ||
+                key === 'keywords' ||
+                key === 'image' ||
+                key === 'name' ||
+                key === 'recipeIngredient') {
                 recipe[key] = jsonld[key];
             }
         }
@@ -92,12 +95,13 @@ const extractData = (jsonld) => {
 };
 const handleScrape = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const html = yield fetchHtml(req.body.url);
+        const url = req.body.url;
+        const html = yield fetchHtml(url);
         const jsonld = parseHtml(html);
         if (!jsonld)
             throw new Error('no json ld');
         let recipe = extractData(jsonld);
-        recipe.url = req.body.url;
+        recipe.url = url;
         recipe.id = uuid.v4();
         recipe.notes = [];
         const user = yield User.findById(req.body._id);

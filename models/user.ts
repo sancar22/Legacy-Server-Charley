@@ -1,4 +1,4 @@
-const mongoose = require('./index');
+import mongoose from './index';
 
 const userSchema = mongoose.Schema({
   email: {
@@ -20,4 +20,4 @@ const userSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('User', userSchema);
+export default mongoose.model('User', userSchema);
