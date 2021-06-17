@@ -9,7 +9,8 @@
     "start": "tsc && nodemon dist/index.js",
     "test": "jest",
     "prepare": "husky install",
-    "lint:staged": "lint-staged"
+     "pre-commit": "lint-staged"
+    // "lint:staged": "lint-staged"
   },
   "repository": {
     "type": "git",

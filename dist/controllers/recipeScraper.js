@@ -8,18 +8,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const cheerio = require('cheerio');
-const fetch = require('node-fetch');
-const uuid = require('uuid');
-const User = require('../models/user');
+const cheerio_1 = __importDefault(require("cheerio"));
+const node_fetch_1 = __importDefault(require("node-fetch"));
+const uuid_1 = __importDefault(require("uuid"));
+const user_1 = __importDefault(require("../models/user"));
 const fetchWithTimeout = (url, options, timeout = 5000) => Promise.race([
-    fetch(url, options),
+    node_fetch_1.default(url, options),
     new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), timeout)),
 ]);
 const fetchHtml = (url) => fetchWithTimeout(url).then((res) => res.text());
 const parseHtml = (html) => {
-    const $ = cheerio.load(html);
+    const $ = cheerio_1.default.load(html);
     const jsonld = $('script[type="application/ld+json"]').html();
     if (!jsonld)
         return false;
@@ -102,12 +105,12 @@ const handleScrape = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             throw new Error('no json ld');
         let recipe = extractData(jsonld);
         recipe.url = url;
-        recipe.id = uuid.v4();
+        recipe.id = uuid_1.default.v4();
         recipe.notes = [];
-        const user = yield User.findById(req.body._id);
+        const user = yield user_1.default.findById(req.body._id);
         recipe.origin = user.username;
         // save to user document
-        yield User.findByIdAndUpdate(req.body._id, { $push: { recipeStore: recipe } }, { new: true });
+        yield user_1.default.findByIdAndUpdate(req.body._id, { $push: { recipeStore: recipe } }, { new: true });
         res.status(200).json(recipe);
     }
     catch (e) {
@@ -115,5 +118,5 @@ const handleScrape = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.status(400).send(e.message);
     }
 });
-module.exports = { handleScrape };
+exports.default = { handleScrape };
 //# sourceMappingURL=recipeScraper.js.map
