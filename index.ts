@@ -14,10 +14,10 @@ app
   .use(cors())
   .use(express.json())
   .use(router)
-  .get('/', (_, res) => {
+  .get('/', (_: any, res: any) => {
     res.status(200).send('Hello, stranger!');
   })
-  .get('*', (_, res) => {
+  .get('*', (_: any, res: any) => {
     res.status(404).send('Sorry, not found 😞');
   })
   .listen(PORT, () => {

@@ -2,10 +2,10 @@
   "name": "chef-share-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon --exec \"node -r dotenv/config\" index.js",
-    "start": "node index.js",
+    "start": "tsc && nodemon index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
