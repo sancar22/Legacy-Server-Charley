@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('./controllers/users');
 const recipeScrapingController = require('./controllers/recipeScraper');
-const recipeController = require('./controllers/recipe');
+const recipeController = require('./controllers/recipe.ts');
 const authMiddleware = require('./middlewares/auth');
 
 router.post('/signup', userController.createUser);
@@ -14,7 +14,11 @@ router.get('/users', authMiddleware, userController.getAllButMe);
 router.post('/getFriendStore', authMiddleware, userController.getFriendStore);
 
 router.post('/scrape', authMiddleware, recipeScrapingController.handleScrape);
-router.post('/deleteRecipe', authMiddleware, recipeController.deleteRecipe);
+router.post(
+  '/deleteRecipe/:recipeId',
+  authMiddleware,
+  recipeController.deleteRecipe
+);
 router.post('/addFromFriend', authMiddleware, recipeController.addFromFriend);
 router.post(
   '/editRecipe/:editAction',
