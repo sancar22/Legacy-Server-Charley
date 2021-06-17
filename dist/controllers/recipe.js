@@ -26,7 +26,7 @@ const deleteRecipe = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 const addFromFriend = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.body._id;
-    const { recipe } = req.body;
+    const recipe = req.body.recipe;
     try {
         yield User.findByIdAndUpdate(userId, { $push: { recipeStore: recipe } });
         res.status(204).send('success');
