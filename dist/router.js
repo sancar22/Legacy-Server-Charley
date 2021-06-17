@@ -1,23 +1,26 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const users_1 = __importDefault(require("./controllers/users"));
-const recipeScraper_1 = __importDefault(require("./controllers/recipeScraper"));
-const recipe_1 = __importDefault(require("./controllers/recipe"));
-const auth_1 = __importDefault(require("./middlewares/auth"));
-const router = express_1.default.Router();
-router.post('/signup', users_1.default.createUser);
-router.post('/login', users_1.default.login);
-router.get('/logout', auth_1.default, users_1.default.logout);
-router.get('/profile', auth_1.default, users_1.default.profile);
-router.get('/users', auth_1.default, users_1.default.getAllButMe);
-router.post('/getFriendStore', auth_1.default, users_1.default.getFriendStore);
-router.post('/scrape', auth_1.default, recipeScraper_1.default.handleScrape);
-router.post('/deleteRecipe/:recipeId', auth_1.default, recipe_1.default.deleteRecipe);
-router.post('/addFromFriend', auth_1.default, recipe_1.default.addFromFriend);
-router.post('/editRecipe/:editAction', auth_1.default, recipe_1.default.editRecipe);
-exports.default = router;
-//# sourceMappingURL=router.js.map
+'use strict';
+const express = require('express');
+const router = express.Router();
+const userController = require('./controllers/users.ts');
+const recipeScrapingController = require('./controllers/recipeScraper.ts');
+const recipeController = require('./controllers/recipe.ts');
+const authMiddleware = require('./middlewares/auth.ts');
+router.post('/signup', userController.createUser);
+router.post('/login', userController.login);
+router.get('/logout', authMiddleware, userController.logout);
+router.get('/profile', authMiddleware, userController.profile);
+router.get('/users', authMiddleware, userController.getAllButMe);
+router.post('/getFriendStore', authMiddleware, userController.getFriendStore);
+router.post('/scrape', authMiddleware, recipeScrapingController.handleScrape);
+router.post(
+  '/deleteRecipe/:recipeId',
+  authMiddleware,
+  recipeController.deleteRecipe
+);
+router.post('/addFromFriend', authMiddleware, recipeController.addFromFriend);
+router.post(
+  '/editRecipe/:editAction',
+  authMiddleware,
+  recipeController.editRecipe
+);
+module.exports = router;
