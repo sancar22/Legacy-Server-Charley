@@ -1,62 +1,55 @@
-const User = require("../models/user");
+const User = require('../models/user');
 
 const deleteRecipe = async (req, res) => {
   const userId = req.body._id;
   const recipeId = req.body.id;
 
   try {
-    await User.findByIdAndUpdate(userId,
-      {$pull: {'recipeStore': {id: recipeId}}}
-    );
+    await User.findByIdAndUpdate(userId, {
+      $pull: { recipeStore: { id: recipeId } },
+    });
     res.status(200).send('successfully deleted');
-
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
   }
-}
+};
 
 const addFromFriend = async (req, res) => {
   const userId = req.body._id;
-  const recipe = req.body.recipe;
+  const { recipe } = req.body;
 
   try {
-    await User.findByIdAndUpdate(userId,
-      {$push: {'recipeStore': recipe }}
-    );
+    await User.findByIdAndUpdate(userId, { $push: { recipeStore: recipe } });
     res.status(204).send('success');
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
   }
+};
 
-}
-
-
-const editRecipe = async(req, res) => {
+const editRecipe = async (req, res) => {
   const userId = req.body._id;
-  const recipeId = req.body.id
-  const editAction = req.params.editAction;
+  const recipeId = req.body.id;
+  const { editAction } = req.params;
 
   let options = {
-    'nameChange': {$set: {'recipeStore.$.name': req.body.payload}},
-    'addNote': {$push: {'recipeStore.$.notes': req.body.payload}},
-    'deleteNote':{$pull: {'recipeStore.$.notes': {id: req.body.payload}}},
-  }
+    nameChange: { $set: { 'recipeStore.$.name': req.body.payload } },
+    addNote: { $push: { 'recipeStore.$.notes': req.body.payload } },
+    deleteNote: { $pull: { 'recipeStore.$.notes': { id: req.body.payload } } },
+  };
 
   try {
     await User.findOneAndUpdate(
-      {_id: userId, recipeStore: {$elemMatch: {id: recipeId}}},
+      { _id: userId, recipeStore: { $elemMatch: { id: recipeId } } },
       options[editAction],
-      {'new': true, 'safe': true}
+      { new: true, safe: true }
     );
     res.status(200).send('successfully updated');
-
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
   }
-}
+};
 
-
-module.exports = { deleteRecipe, addFromFriend, editRecipe};
+module.exports = { deleteRecipe, addFromFriend, editRecipe };

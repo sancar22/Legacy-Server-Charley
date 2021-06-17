@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const userController = require('./controllers/users');
 const recipeScrapingController = require('./controllers/recipeScraper');
@@ -15,7 +16,10 @@ router.post('/getFriendStore', authMiddleware, userController.getFriendStore);
 router.post('/scrape', authMiddleware, recipeScrapingController.handleScrape);
 router.post('/deleteRecipe', authMiddleware, recipeController.deleteRecipe);
 router.post('/addFromFriend', authMiddleware, recipeController.addFromFriend);
-router.post('/editRecipe/:editAction', authMiddleware, recipeController.editRecipe);
-
+router.post(
+  '/editRecipe/:editAction',
+  authMiddleware,
+  recipeController.editRecipe
+);
 
 module.exports = router;
