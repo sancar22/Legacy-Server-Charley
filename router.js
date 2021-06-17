@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const userController = require('./controllers/users');
-const recipeScrapingController = require('./controllers/recipeScraper');
+const recipeScrapingController = require('./controllers/recipeScraper.ts');
 const recipeController = require('./controllers/recipe.ts');
 const authMiddleware = require('./middlewares/auth');
 
