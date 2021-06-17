@@ -1,29 +1,27 @@
-import { Request, Response, NextFunction } from 'express';
-const jwt = require('jsonwebtoken');
-const { isTokenValid } = require('./tokenValidation.ts');
+import { verify } from 'jsonwebtoken';
+
+import { isTokenValid } from './tokenValidation';
+
 const { SECRET_KEY } = process.env;
 
-const authMiddleware = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const authMiddleware = async (req, res, next) => {
   try {
     // get token
-    const authHeaders: string | undefined = req.headers.authorization;
+    const authHeaders = req.headers.authorization;
     if (!authHeaders) return res.sendStatus(403);
-    const token: string = authHeaders.split(' ')[1];
+    const token = authHeaders.split(' ')[1];
 
     if (!isTokenValid(token)) {
       throw new Error('invalid token');
     }
 
-    let tokenData: { _id: string } = jwt.verify(token, SECRET_KEY);
+    let tokenData = verify(token, SECRET_KEY);
     req.body._id = tokenData._id;
+
     next();
   } catch (e) {
     res.status(401).end('You need to be logged in first');
   }
 };
 
-module.exports = authMiddleware;
+export default authMiddleware;

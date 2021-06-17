@@ -9,6 +9,8 @@
     "strict": true,
     "outDir": "dist",
     "baseUrl": ".",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true ,
     "paths": {
       "*": ["node_modules/*"]
     }
