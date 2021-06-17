@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "nodemon --ext \"ts,js,json\" --exec \" node -r dotenv/config -r ts-node/register \" index.ts",
+    "dev": "nodemon --exec \"node -r dotenv/config\" index.js",
     "build": "tsc",
     "start": "tsc && nodemon dist/index.js",
     "test": "jest",
