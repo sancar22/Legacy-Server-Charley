@@ -1,3 +1,5 @@
+import { Request, Response } from 'express';
+
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
@@ -14,10 +16,10 @@ app
   .use(cors())
   .use(express.json())
   .use(router)
-  .get('/', (_: any, res: any) => {
+  .get('/', (_: Request, res: Response) => {
     res.status(200).send('Hello, stranger!');
   })
-  .get('*', (_: any, res: any) => {
+  .get('*', (_: Request, res: Response) => {
     res.status(404).send('Sorry, not found 😞');
   })
   .listen(PORT, () => {

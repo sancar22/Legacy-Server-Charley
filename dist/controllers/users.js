@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const { ObjectID } = require('mongodb');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -35,7 +36,9 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
         newUser.save();
         // send back access token
-        let token = jwt.sign({ _id: newUser._id }, SECRET_KEY, { expiresIn: '3h' });
+        let token = jwt.sign({ _id: newUser._id }, SECRET_KEY, {
+            expiresIn: '3h',
+        });
         validateToken(token);
         res.status(201).json({ accessToken: token });
     }
@@ -54,7 +57,9 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return res.status(403).end('invalid username or password');
     }
     // send back access token
-    let token = jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '3h' });
+    let token = jwt.sign({ _id: user._id }, SECRET_KEY, {
+        expiresIn: '3h',
+    });
     validateToken(token);
     res.status(200).json({ accessToken: token });
 });
@@ -75,9 +80,10 @@ const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 const getAllButMe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const users = yield User.find();
-        const allButMe = users.filter((user) => user.id !== req.body._id);
-        const usernames = allButMe.map((user) => user.username);
+        const allButMe = yield User.find({
+            _id: { $nin: [ObjectID(req.body._id)] },
+        }).select('username -_id');
+        const usernames = allButMe.map((otherUser) => otherUser.username);
         res.status(200).json(usernames);
     }
     catch (e) {
@@ -87,7 +93,9 @@ const getAllButMe = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 const getFriendStore = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const user = yield User.findOne({ username: req.body.username });
+        const user = yield User.findOne({
+            username: req.body.username,
+        });
         if (user) {
             res.status(200).json(user.recipeStore);
         }
