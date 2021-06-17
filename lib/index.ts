@@ -14,18 +14,31 @@ interface Note {
   text: string;
 }
 
-interface Recipe {
-  author: string;
-  id: string;
-  image: string;
-  keywords: string[];
+interface ExtractedRecipe {
   name: string;
-  notes: Note[];
-  origin: string;
+  keywords: string[];
+  image: string;
+  recipeYield: string;
   recipeIngredient: string[];
   recipeInstructions: string[];
-  recipeYield: string;
+  author: string;
+  publisher?: string;
+}
+
+interface Recipe extends ExtractedRecipe {
+  id: string;
+  notes: Note[];
+  origin: string;
   url: string;
 }
 
-export { EditOptions, Recipe };
+interface UserDB {
+  _id: string;
+  __v: number;
+  email: string;
+  password: string;
+  username: string;
+  recipeStore: Recipe[];
+}
+
+export { EditOptions, Recipe, ExtractedRecipe, UserDB };
