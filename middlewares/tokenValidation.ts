@@ -1,19 +1,19 @@
 // token whitelist
-let storage: string[] = [];
+let storage = [];
 
-function validateToken(token: string) {
+function validateToken(token) {
   storage.push(token);
 }
 
-function invalidateToken(token: string) {
-  storage = storage.filter((tok: string) => tok !== token);
+function invalidateToken(token) {
+  storage = storage.filter((tok) => tok !== token);
 }
 
-function isTokenValid(token: string) {
+function isTokenValid(token) {
   return storage.includes(token);
 }
 
-module.exports = {
+export  {
   validateToken,
   isTokenValid,
   invalidateToken,

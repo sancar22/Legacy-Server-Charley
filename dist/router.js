@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 const express = require('express');
 const router = express.Router();
 const userController = require('./controllers/users.ts');
@@ -12,8 +12,15 @@ router.get('/profile', authMiddleware, userController.profile);
 router.get('/users', authMiddleware, userController.getAllButMe);
 router.post('/getFriendStore', authMiddleware, userController.getFriendStore);
 router.post('/scrape', authMiddleware, recipeScrapingController.handleScrape);
-router.post('/deleteRecipe/:recipeId', authMiddleware, recipeController.deleteRecipe);
+router.post(
+  '/deleteRecipe/:recipeId',
+  authMiddleware,
+  recipeController.deleteRecipe
+);
 router.post('/addFromFriend', authMiddleware, recipeController.addFromFriend);
-router.post('/editRecipe/:editAction', authMiddleware, recipeController.editRecipe);
+router.post(
+  '/editRecipe/:editAction',
+  authMiddleware,
+  recipeController.editRecipe
+);
 module.exports = router;
-//# sourceMappingURL=router.js.map

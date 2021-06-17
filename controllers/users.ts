@@ -10,6 +10,7 @@ const {
   invalidateToken,
 } = require('../middlewares/tokenValidation');
 
+
 const SECRET_KEY: string | undefined = process.env.SECRET_KEY;
 
 const createUser = async (req: Request, res: Response) => {
@@ -109,12 +110,12 @@ const getFriendStore = async (req: Request, res: Response) => {
     res.status(400).send(e);
   }
 };
-
-module.exports = {
+const userController = {
   createUser,
   getAllButMe,
   login,
   logout,
   profile,
   getFriendStore,
-};
+}
+export default userController ;

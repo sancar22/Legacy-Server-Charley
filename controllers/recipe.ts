@@ -55,4 +55,4 @@ const editRecipe = async (req: Request, res: Response) => {
   }
 };
 
-module.exports = { deleteRecipe, addFromFriend, editRecipe };
+export default { deleteRecipe, addFromFriend, editRecipe };

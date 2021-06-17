@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
-
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+
 require('dotenv').config();
 
-const router = require('./router');
+import router from './router';
 
 const { PORT } = process.env;
 
