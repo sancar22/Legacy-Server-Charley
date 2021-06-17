@@ -32,13 +32,35 @@ interface Recipe extends ExtractedRecipe {
   url: string;
 }
 
-interface UserDB {
-  _id: string;
-  __v: number;
+interface LoginInput {
+  email: string | undefined;
+  password: string | undefined;
+}
+
+interface RawUser {
   email: string;
   password: string;
   username: string;
+}
+
+interface UserDB extends RawUser {
+  _id: string;
+  __v: number;
   recipeStore: Recipe[];
 }
 
-export { EditOptions, Recipe, ExtractedRecipe, UserDB };
+interface UserCreateInput {
+  email: string | undefined;
+  password: string | undefined;
+  username: string | undefined;
+}
+
+export {
+  EditOptions,
+  Recipe,
+  ExtractedRecipe,
+  UserDB,
+  UserCreateInput,
+  RawUser,
+  LoginInput,
+};
