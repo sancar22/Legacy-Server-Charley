@@ -1,3 +1,4 @@
+/* @ts-ignore */
 const mongoose = require('./index');
 
 const userSchema = mongoose.Schema({
