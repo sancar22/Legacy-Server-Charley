@@ -1,18 +1,22 @@
 /* @ts-ignore */
-const mongoose = require('mongoose');
+import { connect, Mongoose } from 'mongoose';
 
-const { DB_CONN } = process.env;
-
-mongoose.connect(
-  DB_CONN,
-  { useNewUrlParser: true, useUnifiedTopology: true },
-  (err: any) => {
-    if (err) {
-      console.log(`😞 can't connect to db, something went wrong! ${err}`);
-    } else {
-      console.log(`🦆 database connected!`);
-    }
+const bootDB = async (
+  connectionString: string
+): Promise<Mongoose | undefined> => {
+  try {
+    const connection = await connect(connectionString, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+    });
+    console.log('Successfully connected to the database.');
+    return connection;
+  } catch (err) {
+    console.log('[Database connection error]:\n', err);
   }
-);
+};
 
-module.exports = mongoose;
+module.exports = {
+  bootDB,
+};

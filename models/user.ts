@@ -1,5 +1,5 @@
 /* @ts-ignore */
-const mongoose = require('./index');
+const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema({
   email: {

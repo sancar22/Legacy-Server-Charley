@@ -4,9 +4,9 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "nodemon --exec \"node -r dotenv/config\" index.js",
+    "dev": "nodemon --exec \"node -r dotenv/config\" index.ts",
     "start": "tsc && nodemon index.ts",
-    "test": "jest"
+    "test": "jest  'controllers/users.test.js'"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,10 @@
   },
   "homepage": "https://github.com/charcarr/chef-share-server#readme",
   "dependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/cors": "^2.8.10",
+    "@types/jsonwebtoken": "^8.5.2",
+    "@types/mongoose": "^5.11.97",
     "bcrypt": "^5.0.1",
     "cheerio": "^1.0.0-rc.10",
     "cors": "^2.8.5",
