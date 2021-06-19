@@ -11,7 +11,7 @@ const authMiddleware = async (
   try {
     // get token
     const authHeaders: string | undefined = req.headers.authorization;
-    if (!authHeaders) return res.sendStatus(403);
+    if (!authHeaders) return res.status(401).send('No auth headers');
     const token: string = authHeaders.split(' ')[1];
 
     if (!isTokenValid(token)) {

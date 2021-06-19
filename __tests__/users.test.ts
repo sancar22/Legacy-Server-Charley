@@ -8,6 +8,7 @@ const { mocks } = require('../mocks/index');
 const { bootDB } = require('../models/index.ts');
 const { bootServer } = require('../server.ts');
 const jwt = require('jsonwebtoken');
+const { isTokenValid } = require('../middlewares/tokenValidation');
 
 const User = require('../models/user.ts');
 
@@ -18,6 +19,8 @@ const SECRET_KEY: string | undefined = process.env.SECRET_KEY;
 let server: Server;
 let db: Mongoose | undefined;
 let mockUsers: RawUser[];
+let accessToken: string;
+let randomLoggedInMockIndex: number;
 
 describe('Integration tests - controllers/users.ts', () => {
   beforeAll(async () => {
@@ -99,8 +102,9 @@ describe('Integration tests - controllers/users.ts', () => {
       expect(response.status).toBe(403);
     });
 
-    test('should return accessToken  with userID on successful login', async () => {
-      const { email, password } = mockUsers[random(mockUsers.length)];
+    test('should return accessToken  with userID on successful login, token should be in jwt store', async () => {
+      randomLoggedInMockIndex = random(mockUsers.length);
+      const { email, password } = mockUsers[randomLoggedInMockIndex];
       const response = await endpoint.send({ email, password });
       expect(response.body).toHaveProperty('accessToken');
       const tokenData: { _id: string } = jwt.verify(
@@ -108,8 +112,38 @@ describe('Integration tests - controllers/users.ts', () => {
         SECRET_KEY
       );
       expect(tokenData).toHaveProperty('_id');
+      expect(isTokenValid(response.body.accessToken)).toBeTruthy();
       const user = await User.findById(tokenData._id);
       expect(user).toBeDefined();
+      accessToken = response.body.accessToken;
+    });
+  });
+
+  describe('Logout user GET/logout', () => {
+    let endpoint: Test;
+    beforeEach(() => {
+      endpoint = request(server).get('/logout');
+    });
+    test('should return 401 if no auth headers are sent', async () => {
+      const response = await endpoint;
+      expect(response.status).toBe(401);
+    });
+    test('should return 401 if auth headers are sent with wrong bearer token', async () => {
+      const response = await endpoint.set(
+        'Authorization',
+        'Bearer: notavalidjwttoken'
+      );
+      expect(response.status).toBe(401);
+    });
+
+    test('token should be removed from jwt storage after correct logout', async () => {
+      expect(isTokenValid(accessToken)).toBeTruthy();
+      const response = await endpoint.set(
+        'Authorization',
+        `Bearer: ${accessToken}`
+      );
+      expect(isTokenValid(accessToken)).toBeFalsy();
+      expect(response.status).toBe(200);
     });
   });
 

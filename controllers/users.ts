@@ -94,7 +94,7 @@ const getAllButMe = async (req: Request, res: Response) => {
     res.status(200).json(usernames);
   } catch (e) {
     console.log(e);
-    res.status(400).send(e);
+    res.status(500).send(e);
   }
 };
 
@@ -109,7 +109,7 @@ const getFriendStore = async (req: Request, res: Response) => {
       throw new Error('user not found');
     }
   } catch (e) {
-    res.status(400).send(e);
+    res.status(500).send(e);
   }
 };
 
