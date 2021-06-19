@@ -18,6 +18,10 @@ const mocks = {
   userOnlyUsername: {
     username: 'hey',
   },
+  userLoginNotExist: {
+    email: 'idonotexist@gmail.com',
+    password: 'heyidontexist',
+  },
 };
 
 module.exports = {
