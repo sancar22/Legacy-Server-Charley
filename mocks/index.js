@@ -9,6 +9,15 @@ const mocks = {
     username: 'sancar100',
     password: 'betterbehashedtoo',
   },
+  userOnlyEmail: {
+    email: 'whatever@gmail.com',
+  },
+  userOnlyPassword: {
+    password: '123456',
+  },
+  userOnlyUsername: {
+    username: 'hey',
+  },
 };
 
 module.exports = {

@@ -20,7 +20,7 @@ const createUser = async (req: Request, res: Response) => {
       return res.status(400).send('invalid request');
     }
     if (await User.findOne({ email }).exec()) {
-      return res.status(403).send('user already exists!');
+      return res.status(409).send('user already exists!');
     }
     if (await User.findOne({ username }).exec()) {
       return res.status(409).send('this username is taken');
