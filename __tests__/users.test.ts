@@ -75,6 +75,7 @@ describe('Integration tests - controllers/users.ts', () => {
       firstMockUserCopy.password = user.password;
       expect(isMatch).toBeTruthy();
       expect(user).toMatchObject(firstMockUserCopy);
+      await User.deleteOne({ _id: user._id });
     });
   });
 
@@ -146,6 +147,37 @@ describe('Integration tests - controllers/users.ts', () => {
         `Bearer: ${accessToken}`
       );
       expect(response.body).toMatchObject(loggedInMockUserCopy);
+    });
+  });
+
+  describe('Get all but me GET/users', () => {
+    let endpoint: Test;
+    beforeEach(() => {
+      endpoint = request(server).get('/users');
+    });
+
+    test('should return 401 if no auth headers are sent', async () => {
+      const response = await endpoint;
+      expect(response.status).toBe(401);
+    });
+    test('should return 401 if auth headers are sent with wrong bearer token', async () => {
+      const response = await endpoint.set(
+        'Authorization',
+        'Bearer: notavalidjwttoken'
+      );
+      expect(response.status).toBe(401);
+    });
+
+    test(`should get all user's username except the username of the one making the request`, async () => {
+      const userMakingRequest = mockUsers[randomLoggedInMockIndex];
+      const response = await endpoint.set(
+        'Authorization',
+        `Bearer: ${accessToken}`
+      );
+      const expectedArrayResponse: string[] = mockUsers
+        .filter((user) => user.email !== userMakingRequest.email)
+        .map((user) => user.username);
+      expect(expectedArrayResponse.sort()).toEqual(response.body.sort());
     });
   });
 
