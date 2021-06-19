@@ -119,6 +119,36 @@ describe('Integration tests - controllers/users.ts', () => {
     });
   });
 
+  describe('Profile GET/profile', () => {
+    let endpoint: Test;
+    beforeEach(() => {
+      endpoint = request(server).get('/profile');
+    });
+    test('should return 401 if no auth headers are sent', async () => {
+      const response = await endpoint;
+      expect(response.status).toBe(401);
+    });
+    test('should return 401 if auth headers are sent with wrong bearer token', async () => {
+      const response = await endpoint.set(
+        'Authorization',
+        'Bearer: notavalidjwttoken'
+      );
+      expect(response.status).toBe(401);
+    });
+
+    test('should return user if valid auth headers are set', async () => {
+      const loggedInMockUserCopy: any = {
+        ...mockUsers[randomLoggedInMockIndex],
+      };
+      delete loggedInMockUserCopy.password;
+      const response = await endpoint.set(
+        'Authorization',
+        `Bearer: ${accessToken}`
+      );
+      expect(response.body).toMatchObject(loggedInMockUserCopy);
+    });
+  });
+
   describe('Logout user GET/logout', () => {
     let endpoint: Test;
     beforeEach(() => {
