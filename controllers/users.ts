@@ -44,27 +44,30 @@ const createUser = async (req: Request, res: Response) => {
     validateToken(token);
     res.status(201).json({ accessToken: token });
   } catch (e) {
-    console.log(e);
-    res.status(403).send(e);
+    res.status(500).send('Internal Server Error!');
   }
 };
 
 const login = async (req: Request, res: Response) => {
-  const { email, password }: LoginInput = req.body;
-  if (!email || !password) {
-    return res.status(400).end('username and password are required');
-  }
-  let user: UserDB | undefined = await User.findOne({ email }).exec();
-  if (!user || !bcrypt.compareSync(password, user.password)) {
-    return res.status(403).end('invalid username or password');
-  }
+  try {
+    const { email, password }: LoginInput = req.body;
+    if (!email || !password) {
+      return res.status(400).end('username and password are required');
+    }
+    let user: UserDB | undefined = await User.findOne({ email }).exec();
+    if (!user || !bcrypt.compareSync(password, user.password)) {
+      return res.status(403).end('invalid username or password');
+    }
 
-  // send back access token
-  let token: string = jwt.sign({ _id: user._id }, SECRET_KEY, {
-    expiresIn: '3h',
-  });
-  validateToken(token);
-  res.status(200).json({ accessToken: token });
+    // send back access token
+    let token: string = jwt.sign({ _id: user._id }, SECRET_KEY, {
+      expiresIn: '3h',
+    });
+    validateToken(token);
+    res.status(200).json({ accessToken: token });
+  } catch (e) {
+    res.status(500).send('Internal Server Error!');
+  }
 };
 
 const profile = async (req: Request, res: Response) => {
