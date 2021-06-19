@@ -71,11 +71,13 @@ const login = async (req: Request, res: Response) => {
 };
 
 const profile = async (req: Request, res: Response) => {
-  const user: UserDB | undefined = await User.findById(req.body._id);
-  if (user) {
+  try {
+    const user: UserDB | undefined = await User.findById(req.body._id).select(
+      '-password'
+    );
     res.status(200).json(user);
-  } else {
-    res.sendStatus(400);
+  } catch (e) {
+    res.status(500).send('Internal Server Error!');
   }
 };
 
