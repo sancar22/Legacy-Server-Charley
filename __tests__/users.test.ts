@@ -223,6 +223,46 @@ describe('Integration tests - controllers', () => {
     });
   });
 
+  describe('Get recipes from friend POST/getFriendStore', () => {
+    let endpoint: Test;
+    let friendToSearch: RawUser;
+    beforeAll(() => {
+      const user = mockUsers[randomLoggedInMockIndex];
+      friendToSearch = mockUsers.filter(
+        (userMock) => userMock.email !== user.email
+      )[random(mockUsers.length - 1)];
+    });
+    beforeEach(() => {
+      endpoint = request(server).post('/getFriendStore');
+    });
+
+    test('should return 401 if no auth headers are sent', async () => {
+      const response = await endpoint.send({
+        username: friendToSearch.username,
+      });
+      expect(response.status).toBe(401);
+    });
+    test('should return 401 if auth headers are sent with wrong bearer token', async () => {
+      const response = await endpoint
+        .send({ username: friendToSearch.username })
+        .set('Authorization', 'Bearer: notavalidjwttoken');
+      expect(response.status).toBe(401);
+    });
+
+    test('should get all recipes from friend if headers are okay', async () => {
+      const response = await endpoint
+        .send({ username: friendToSearch.username })
+        .set('Authorization', `Bearer: ${accessToken}`);
+      const friendDB = await User.findOne({ email: friendToSearch.email });
+      const expectedResponse = await Recipe.find({
+        userID: friendDB._id,
+      }).lean();
+      expect(JSON.stringify(response.body)).toEqual(
+        JSON.stringify(expectedResponse)
+      );
+    });
+  });
+
   describe('Logout user GET/logout', () => {
     let endpoint: Test;
     beforeEach(() => {
