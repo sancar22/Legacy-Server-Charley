@@ -1,6 +1,5 @@
 /* @ts-ignore */
 const mongoose = require('mongoose');
-
 const userSchema = mongoose.Schema({
   email: {
     type: String,
@@ -13,11 +12,6 @@ const userSchema = mongoose.Schema({
   username: {
     type: String,
     required: true,
-  },
-  recipeStore: {
-    type: Array,
-    required: false,
-    default: [],
   },
 });
 

@@ -26,7 +26,13 @@ interface ExtractedRecipe {
 }
 
 interface Recipe extends ExtractedRecipe {
-  id: string;
+  _id: string;
+  notes: Note[];
+  origin: string;
+  url: string;
+}
+interface RecipeDB extends ExtractedRecipe {
+  userID: string;
   notes: Note[];
   origin: string;
   url: string;
@@ -46,7 +52,7 @@ interface RawUser {
 interface UserDB extends RawUser {
   _id: string;
   __v: number;
-  recipeStore: Recipe[];
+  recipeStore?: Recipe[];
 }
 
 interface UserCreateInput {
@@ -63,4 +69,5 @@ export {
   UserCreateInput,
   RawUser,
   LoginInput,
+  RecipeDB,
 };

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Document } from 'mongoose';
 import { UserCreateInput, UserDB, RawUser, LoginInput } from '../lib/index';
+const RecipeDB = require('../models/recipe');
 const { ObjectID } = require('mongodb');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -9,6 +10,7 @@ const {
   validateToken,
   invalidateToken,
 } = require('../middlewares/tokenValidation');
+require('dotenv').config();
 
 const SECRET_KEY: string | undefined = process.env.SECRET_KEY;
 
@@ -44,6 +46,7 @@ const createUser = async (req: Request, res: Response) => {
     validateToken(token);
     res.status(201).json({ accessToken: token });
   } catch (e) {
+    console.log(e);
     res.status(500).send('Internal Server Error!');
   }
 };
@@ -72,9 +75,12 @@ const login = async (req: Request, res: Response) => {
 
 const profile = async (req: Request, res: Response) => {
   try {
-    const user: UserDB | undefined = await User.findById(req.body._id).select(
-      '-password'
-    );
+    let user: UserDB | undefined = await User.findById(req.body._id)
+      .select('-password')
+      .lean();
+    if (!user) return res.status(404).send('User does not exist');
+    const recipesFromUser = await RecipeDB.find({ userID: req.body._id });
+    user.recipeStore = recipesFromUser;
     res.status(200).json(user);
   } catch (e) {
     res.status(500).send('Internal Server Error!');
@@ -104,12 +110,10 @@ const getFriendStore = async (req: Request, res: Response) => {
   try {
     const user: UserDB | undefined = await User.findOne({
       username: req.body.username,
-    });
-    if (user) {
-      res.status(200).json(user.recipeStore);
-    } else {
-      throw new Error('user not found');
-    }
+    }).lean();
+    if (!user) return res.status(400).send('User does not exist!');
+    const recipesFromUser = await RecipeDB.find({ userID: user._id });
+    res.status(200).json(recipesFromUser);
   } catch (e) {
     res.status(500).send(e);
   }
