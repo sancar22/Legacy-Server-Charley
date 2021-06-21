@@ -276,16 +276,71 @@ describe('Integration tests - controllers', () => {
     });
   });
 
-  describe('Delete recipe POST/deleteRecipe/:recipeId', () => {
-    let endpoint: Test;
+  describe('Edit recipe POST/editRecipe/:editAction', () => {
     let recipe: RecipeDB;
+
     beforeAll(async () => {
       const userMakingRequest = mockUsers[randomLoggedInMockIndex];
       const userDB = await User.findOne({ email: userMakingRequest.email });
       recipe = (await Recipe.find({ userID: userDB._id }))[0];
     });
-    beforeEach(() => {
-      endpoint = request(server).post('/users');
+
+    test('should return 401 if no auth headers are sent', async () => {
+      const response = await request(server)
+        .post(`/editRecipe/nameChange`)
+        .send({ payload: 'New Recipe Name', id: recipe._id });
+      expect(response.status).toBe(401);
+    });
+    test('should return 401 if auth headers are sent with wrong bearer token', async () => {
+      const response = await request(server)
+        .post(`/editRecipe/nameChange`)
+        .send({ payload: 'New Recipe Name', id: recipe._id })
+        .set('Authorization', 'Bearer: notavalidjwttoken');
+      expect(response.status).toBe(401);
+    });
+
+    test('should change name if editAction is "nameChange"', async () => {
+      const response = await request(server)
+        .post('/editRecipe/nameChange')
+        .send({ payload: 'New Recipe Name', id: recipe._id })
+        .set('Authorization', `Bearer: ${accessToken}`);
+      const updatedRecipe = await Recipe.findById(recipe._id);
+      expect(updatedRecipe.name).toBe('New Recipe Name');
+      expect(response.status).toBe(200);
+    });
+
+    test('should add note if editAction is "addNote"', async () => {
+      const noteID = 'x0eqi0ie';
+      const myNoteText = 'my note';
+      const response = await request(server)
+        .post('/editRecipe/addNote')
+        .send({ payload: { id: noteID, text: myNoteText }, id: recipe._id })
+        .set('Authorization', `Bearer: ${accessToken}`);
+      const updatedRecipe = await Recipe.findById(recipe._id);
+      expect(updatedRecipe.notes[0].id).toBe(noteID);
+      expect(updatedRecipe.notes[0].text).toBe(myNoteText);
+      expect(updatedRecipe.notes.length).toBe(1);
+      expect(response.status).toBe(200);
+    });
+
+    test('should delete a note if editAction is "deleteNote', async () => {
+      const noteID = 'x0eqi0ie';
+      const response = await request(server)
+        .post('/editRecipe/deleteNote')
+        .send({ payload: noteID, id: recipe._id })
+        .set('Authorization', `Bearer: ${accessToken}`);
+      const updatedRecipe = await Recipe.findById(recipe._id);
+      expect(updatedRecipe.notes.length).toBe(0);
+      expect(response.status).toBe(200);
+    });
+  });
+
+  describe('Delete recipe POST/deleteRecipe/:recipeId', () => {
+    let recipe: RecipeDB;
+    beforeAll(async () => {
+      const userMakingRequest = mockUsers[randomLoggedInMockIndex];
+      const userDB = await User.findOne({ email: userMakingRequest.email });
+      recipe = (await Recipe.find({ userID: userDB._id }))[0];
     });
 
     test('should return 401 if no auth headers are sent', async () => {
