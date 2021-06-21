@@ -22,7 +22,7 @@ let mockUsers: RawUser[];
 let accessToken: string;
 let randomLoggedInMockIndex: number;
 
-describe('Integration tests - controllers/users.ts', () => {
+describe('Integration tests - controllers', () => {
   beforeAll(async () => {
     db = await bootDB(connectionString);
     if (db) {
