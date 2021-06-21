@@ -21,7 +21,7 @@ const addFromFriend = async (req: Request, res: Response) => {
   try {
     const newRecipe = new RecipeDB(recipeCopy);
     await newRecipe.save();
-    res.status(204).send('success');
+    res.status(201).send('success');
   } catch (e) {
     console.log(e);
     res.status(500).send(e);

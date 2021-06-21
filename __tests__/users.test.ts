@@ -2,7 +2,7 @@ import request, { Test } from 'supertest';
 import { Server } from 'http';
 import { Mongoose } from 'mongoose';
 import { seedDb, random } from '../__seed__';
-import { RawUser, RecipeDB } from '../lib/index';
+import { RawUser, RecipeDB, UserDB } from '../lib/index';
 const bcrypt = require('bcrypt');
 const { mocks } = require('../mocks/index');
 const { bootDB } = require('../models/index.ts');
@@ -188,41 +188,6 @@ describe('Integration tests - controllers', () => {
     });
   });
 
-  describe('Delete recipe POST/deleteRecipe/:recipeId', () => {
-    let endpoint: Test;
-    let recipe: RecipeDB;
-    beforeAll(async () => {
-      const userMakingRequest = mockUsers[randomLoggedInMockIndex];
-      const userDB = await User.findOne({ email: userMakingRequest.email });
-      recipe = (await Recipe.find({ userID: userDB._id }))[0];
-    });
-    beforeEach(() => {
-      endpoint = request(server).post('/users');
-    });
-
-    test('should return 401 if no auth headers are sent', async () => {
-      const response = await request(server).post(
-        `/deleteRecipe/${recipe._id}`
-      );
-      expect(response.status).toBe(401);
-    });
-    test('should return 401 if auth headers are sent with wrong bearer token', async () => {
-      const response = await request(server)
-        .post(`/deleteRecipe/${recipe._id}`)
-        .set('Authorization', 'Bearer: notavalidjwttoken');
-      expect(response.status).toBe(401);
-    });
-
-    test('should delete the recipe if headers are okay', async () => {
-      const response = await request(server)
-        .post(`/deleteRecipe/${recipe._id}`)
-        .set('Authorization', `Bearer: ${accessToken}`);
-      const recipeDeleted = await Recipe.findById(recipe._id);
-      expect(response.status).toBe(200);
-      expect(recipeDeleted).toBeNull();
-    });
-  });
-
   describe('Get recipes from friend POST/getFriendStore', () => {
     let endpoint: Test;
     let friendToSearch: RawUser;
@@ -260,6 +225,89 @@ describe('Integration tests - controllers', () => {
       expect(JSON.stringify(response.body)).toEqual(
         JSON.stringify(expectedResponse)
       );
+      expect(response.status).toBe(200);
+    });
+  });
+
+  describe('Add from friend POST/addFromFriend', () => {
+    let endpoint: Test;
+    let friendToSearch: RawUser;
+    let recipeToAdd: RecipeDB;
+    beforeAll(async () => {
+      const user = mockUsers[randomLoggedInMockIndex];
+      friendToSearch = mockUsers.filter(
+        (userMock) => userMock.email !== user.email
+      )[random(mockUsers.length - 1)];
+      const friendDB: UserDB = await User.findOne({
+        email: friendToSearch.email,
+      });
+      recipeToAdd = await Recipe.findOne({ userID: friendDB._id }).lean();
+    });
+    beforeEach(() => {
+      endpoint = request(server).post('/addFromFriend');
+    });
+
+    test('should return 401 if no auth headers are sent', async () => {
+      const response = await endpoint.send({
+        recipe: recipeToAdd,
+      });
+      expect(response.status).toBe(401);
+    });
+    test('should return 401 if auth headers are sent with wrong bearer token', async () => {
+      const response = await endpoint
+        .send({ recipe: recipeToAdd })
+        .set('Authorization', 'Bearer: notavalidjwttoken');
+      expect(response.status).toBe(401);
+    });
+
+    test('should add recipe correctly to user if headers are okay', async () => {
+      const response = await endpoint
+        .send({ recipe: recipeToAdd })
+        .set('Authorization', `Bearer: ${accessToken}`);
+      const userDB: UserDB = await User.findOne({
+        email: mockUsers[randomLoggedInMockIndex].email,
+      });
+      const userRecipeDB: RecipeDB = await Recipe.findOne({
+        userID: userDB._id,
+        origin: friendToSearch.username,
+      }).lean();
+      expect(userRecipeDB.origin).toEqual(friendToSearch.username);
+      expect(response.status).toBe(201);
+    });
+  });
+
+  describe('Delete recipe POST/deleteRecipe/:recipeId', () => {
+    let endpoint: Test;
+    let recipe: RecipeDB;
+    beforeAll(async () => {
+      const userMakingRequest = mockUsers[randomLoggedInMockIndex];
+      const userDB = await User.findOne({ email: userMakingRequest.email });
+      recipe = (await Recipe.find({ userID: userDB._id }))[0];
+    });
+    beforeEach(() => {
+      endpoint = request(server).post('/users');
+    });
+
+    test('should return 401 if no auth headers are sent', async () => {
+      const response = await request(server).post(
+        `/deleteRecipe/${recipe._id}`
+      );
+      expect(response.status).toBe(401);
+    });
+    test('should return 401 if auth headers are sent with wrong bearer token', async () => {
+      const response = await request(server)
+        .post(`/deleteRecipe/${recipe._id}`)
+        .set('Authorization', 'Bearer: notavalidjwttoken');
+      expect(response.status).toBe(401);
+    });
+
+    test('should delete the recipe if headers are okay', async () => {
+      const response = await request(server)
+        .post(`/deleteRecipe/${recipe._id}`)
+        .set('Authorization', `Bearer: ${accessToken}`);
+      const recipeDeleted = await Recipe.findById(recipe._id);
+      expect(response.status).toBe(200);
+      expect(recipeDeleted).toBeNull();
     });
   });
 
