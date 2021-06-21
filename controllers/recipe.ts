@@ -1,4 +1,3 @@
-const User = require('../models/user');
 const RecipeDB = require('../models/recipe');
 import { EditOptions, Recipe } from '../lib/index';
 import { Request, Response } from 'express';
@@ -21,7 +20,6 @@ const addFromFriend = async (req: Request, res: Response) => {
   delete recipeCopy._id;
   try {
     const newRecipe = new RecipeDB(recipeCopy);
-    // await RecipeDB.(userId, { $push: { recipeStore: recipe } });
     await newRecipe.save();
     res.status(204).send('success');
   } catch (e) {
