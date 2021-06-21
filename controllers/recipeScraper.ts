@@ -2,6 +2,7 @@ const cheerio = require('cheerio');
 const fetch = require('node-fetch');
 const uuid = require('uuid');
 const User = require('../models/user');
+const RecipeDB = require('../models/recipe');
 import { Request, Response } from 'express';
 import { ExtractedRecipe, Recipe, UserDB } from '../lib/index';
 
@@ -99,19 +100,16 @@ const handleScrape = async (req: Request, res: Response) => {
 
     let recipe: Recipe = extractData(jsonld) as Recipe;
     recipe.url = url;
-    recipe.id = uuid.v4();
     recipe.notes = [];
 
     const user: UserDB = await User.findById(req.body._id);
     recipe.origin = user.username;
 
-    // save to user document
-    await User.findByIdAndUpdate(
-      req.body._id,
-      { $push: { recipeStore: recipe } },
-      { new: true }
-    );
-    res.status(200).json(recipe);
+    const newRecipe = new RecipeDB({ ...recipe, userID: req.body._id });
+    await newRecipe.save();
+    console.log(newRecipe);
+
+    res.status(200).json(newRecipe);
   } catch (e) {
     console.log(e);
     res.status(400).send(e.message);

@@ -26,7 +26,7 @@ interface ExtractedRecipe {
 }
 
 interface Recipe extends ExtractedRecipe {
-  id: string;
+  _id: string;
   notes: Note[];
   origin: string;
   url: string;
