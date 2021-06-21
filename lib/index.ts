@@ -36,6 +36,7 @@ interface RecipeDB extends ExtractedRecipe {
   notes: Note[];
   origin: string;
   url: string;
+  _id?: string;
 }
 
 interface LoginInput {

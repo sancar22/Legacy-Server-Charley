@@ -2,7 +2,7 @@ import request, { Test } from 'supertest';
 import { Server } from 'http';
 import { Mongoose } from 'mongoose';
 import { seedDb, random } from '../__seed__';
-import { RawUser } from '../lib/index';
+import { RawUser, RecipeDB } from '../lib/index';
 const bcrypt = require('bcrypt');
 const { mocks } = require('../mocks/index');
 const { bootDB } = require('../models/index.ts');
@@ -11,6 +11,7 @@ const jwt = require('jsonwebtoken');
 const { isTokenValid } = require('../middlewares/tokenValidation');
 
 const User = require('../models/user.ts');
+const Recipe = require('../models/recipe.ts');
 
 const port = process.env.PORT_TEST;
 const connectionString = process.env.DB_CONN_TEST;
@@ -19,6 +20,7 @@ const SECRET_KEY: string | undefined = process.env.SECRET_KEY;
 let server: Server;
 let db: Mongoose | undefined;
 let mockUsers: RawUser[];
+let mockRecipes: RecipeDB[];
 let accessToken: string;
 let randomLoggedInMockIndex: number;
 
@@ -29,12 +31,17 @@ describe('Integration tests - controllers', () => {
       await db?.connection.db.dropDatabase();
       const seedData = await seedDb(db);
       mockUsers = seedData.users;
+      mockRecipes = seedData.recipes;
     }
     server = bootServer(port);
   });
 
   test('Mock users must be present', () => {
     expect(mockUsers).toHaveLength(10);
+  });
+
+  test('Mock recipes must be present', () => {
+    expect(mockRecipes).toHaveLength(10);
   });
 
   describe('User creation POST/signup', () => {
@@ -178,6 +185,41 @@ describe('Integration tests - controllers', () => {
         .filter((user) => user.email !== userMakingRequest.email)
         .map((user) => user.username);
       expect(expectedArrayResponse.sort()).toEqual(response.body.sort());
+    });
+  });
+
+  describe('Delete recipe POST/deleteRecipe/:recipeId', () => {
+    let endpoint: Test;
+    let recipe: RecipeDB;
+    beforeAll(async () => {
+      const userMakingRequest = mockUsers[randomLoggedInMockIndex];
+      const userDB = await User.findOne({ email: userMakingRequest.email });
+      recipe = (await Recipe.find({ userID: userDB._id }))[0];
+    });
+    beforeEach(() => {
+      endpoint = request(server).post('/users');
+    });
+
+    test('should return 401 if no auth headers are sent', async () => {
+      const response = await request(server).post(
+        `/deleteRecipe/${recipe._id}`
+      );
+      expect(response.status).toBe(401);
+    });
+    test('should return 401 if auth headers are sent with wrong bearer token', async () => {
+      const response = await request(server)
+        .post(`/deleteRecipe/${recipe._id}`)
+        .set('Authorization', 'Bearer: notavalidjwttoken');
+      expect(response.status).toBe(401);
+    });
+
+    test('should delete the recipe if headers are okay', async () => {
+      const response = await request(server)
+        .post(`/deleteRecipe/${recipe._id}`)
+        .set('Authorization', `Bearer: ${accessToken}`);
+      const recipeDeleted = await Recipe.findById(recipe._id);
+      expect(response.status).toBe(200);
+      expect(recipeDeleted).toBeNull();
     });
   });
 
