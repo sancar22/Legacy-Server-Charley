@@ -112,7 +112,7 @@ const getFriendStore = async (req: Request, res: Response) => {
       username: req.body.username,
     }).lean();
     if (!user) return res.status(400).send('User does not exist!');
-    const recipesFromUser = await RecipeDB.find({ userID: user._id });
+    const recipesFromUser = await RecipeDB.find({ userID: user._id }).lean();
     res.status(200).json(recipesFromUser);
   } catch (e) {
     res.status(500).send(e);
