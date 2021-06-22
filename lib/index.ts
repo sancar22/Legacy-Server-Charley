@@ -30,6 +30,7 @@ interface Recipe extends ExtractedRecipe {
   notes: Note[];
   origin: string;
   url: string;
+  recipeOriginID?: string;
 }
 interface RecipeDB extends ExtractedRecipe {
   userID: string;
@@ -37,6 +38,7 @@ interface RecipeDB extends ExtractedRecipe {
   origin: string;
   url: string;
   _id?: string;
+  recipeOriginID?: string;
 }
 
 interface LoginInput {

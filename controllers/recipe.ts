@@ -16,7 +16,17 @@ const deleteRecipe = async (req: Request, res: Response) => {
 const addFromFriend = async (req: Request, res: Response) => {
   const userId: string = req.body._id;
   const recipe: Recipe = req.body.recipe;
-  const recipeCopy: any = { ...recipe, userID: userId };
+  // check if recipe was already added;
+  const recipes = await RecipeDB.findOne({
+    userID: userId,
+    recipeOriginID: recipe._id,
+  });
+  if (recipes) return res.status(409).send('Recipe already added!');
+  const recipeCopy: any = {
+    ...recipe,
+    userID: userId,
+    recipeOriginID: recipe._id,
+  };
   delete recipeCopy._id;
   try {
     const newRecipe = new RecipeDB(recipeCopy);

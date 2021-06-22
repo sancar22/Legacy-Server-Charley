@@ -274,6 +274,19 @@ describe('Integration tests - controllers', () => {
       expect(userRecipeDB.origin).toEqual(friendToSearch.username);
       expect(response.status).toBe(201);
     });
+    test('should not add a recipe that has been already added', async () => {
+      const response = await endpoint
+        .send({ recipe: recipeToAdd })
+        .set('Authorization', `Bearer: ${accessToken}`);
+      const userDB: UserDB = await User.findOne({
+        email: mockUsers[randomLoggedInMockIndex].email,
+      });
+      const userRecipeDB: RecipeDB[] = await Recipe.find({
+        userID: userDB._id,
+        origin: friendToSearch.username,
+      }).lean();
+      expect(userRecipeDB.length).toBe(1);
+    });
   });
 
   describe('Edit recipe POST/editRecipe/:editAction', () => {

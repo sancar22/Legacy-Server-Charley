@@ -46,6 +46,10 @@ const recipeSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  recipeOriginID: {
+    type: ObjectID,
+    required: false,
+  },
 });
 
 module.exports = mongoose.model('Recipe', recipeSchema);
