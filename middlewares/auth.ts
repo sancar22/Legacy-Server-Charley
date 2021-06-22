@@ -13,14 +13,17 @@ const authMiddleware = async (
     const authHeaders: string | undefined = req.headers.authorization;
     if (!authHeaders) return res.status(401).send('No auth headers');
     const token: string = authHeaders.split(' ')[1];
-
-    if (!isTokenValid(token)) {
-      throw new Error('invalid token');
+    const tokenValid = await isTokenValid(token);
+    if (!tokenValid) {
+      return res.status(401).send('Token not on list...');
     }
-
-    let tokenData: { _id: string } = jwt.verify(token, SECRET_KEY);
-    req.body._id = tokenData._id;
-    next();
+    try {
+      let tokenData: { _id: string } = await jwt.verify(token, SECRET_KEY);
+      req.body._id = tokenData._id;
+      next();
+    } catch (e) {
+      res.status(401).end('Token expired!');
+    }
   } catch (e) {
     res.status(401).end('You need to be logged in first');
   }

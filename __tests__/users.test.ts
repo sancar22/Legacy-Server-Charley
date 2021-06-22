@@ -8,10 +8,10 @@ const { mocks } = require('../mocks/index');
 const { bootDB } = require('../models/index.ts');
 const { bootServer } = require('../server.ts');
 const jwt = require('jsonwebtoken');
-const { isTokenValid } = require('../middlewares/tokenValidation');
 
 const User = require('../models/user.ts');
 const Recipe = require('../models/recipe.ts');
+const Token = require('../models/token');
 
 const port = process.env.PORT_TEST;
 const connectionString = process.env.DB_CONN_TEST;
@@ -120,7 +120,8 @@ describe('Integration tests - controllers', () => {
         SECRET_KEY
       );
       expect(tokenData).toHaveProperty('_id');
-      expect(isTokenValid(response.body.accessToken)).toBeTruthy();
+      const storage = await Token.findOne({ token: response.body.accessToken });
+      expect(storage).toBeDefined();
       const user = await User.findById(tokenData._id);
       expect(user).toBeDefined();
       accessToken = response.body.accessToken;
@@ -286,6 +287,7 @@ describe('Integration tests - controllers', () => {
         origin: friendToSearch.username,
       }).lean();
       expect(userRecipeDB.length).toBe(1);
+      expect(response.status).toBe(409);
     });
   });
 
@@ -397,12 +399,16 @@ describe('Integration tests - controllers', () => {
     });
 
     test('token should be removed from jwt storage after correct logout', async () => {
-      expect(isTokenValid(accessToken)).toBeTruthy();
+      const storageBeforeLogout = await Token.findOne({ token: accessToken });
+      expect(storageBeforeLogout).toBeDefined();
       const response = await endpoint.set(
         'Authorization',
         `Bearer: ${accessToken}`
       );
-      expect(isTokenValid(accessToken)).toBeFalsy();
+      const storageAfterLogout = await Token.findOne({
+        token: accessToken,
+      });
+      expect(storageAfterLogout).toBeNull();
       expect(response.status).toBe(200);
     });
   });

@@ -43,7 +43,7 @@ const createUser = async (req: Request, res: Response) => {
     let token: string = jwt.sign({ _id: newUser._id }, SECRET_KEY, {
       expiresIn: '3h',
     });
-    validateToken(token);
+    await validateToken(token);
     res.status(201).json({ accessToken: token });
   } catch (e) {
     console.log(e);
@@ -66,7 +66,7 @@ const login = async (req: Request, res: Response) => {
     let token: string = jwt.sign({ _id: user._id }, SECRET_KEY, {
       expiresIn: '3h',
     });
-    validateToken(token);
+    await validateToken(token);
     res.status(200).json({ accessToken: token });
   } catch (e) {
     res.status(500).send('Internal Server Error!');
@@ -89,7 +89,7 @@ const profile = async (req: Request, res: Response) => {
 
 const logout = async (req: Request, res: Response) => {
   const token: string | undefined = req?.headers?.authorization?.split(' ')[1];
-  invalidateToken(token);
+  await invalidateToken(token);
   res.status(200).send('logout successful');
 };
 
